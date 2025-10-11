@@ -1,0 +1,25 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:../database/dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Job {
+  id             Int      @id @default(autoincrement())
+  term           String
+  company        String
+  role           String
+  jobId          String?
+  category       String?
+  opportunity    String?
+  location       String?
+  flexibility    String?
+  status         String?
+  dateApply      String?
+  contact        String?
+  jobDescription String?
+  skills         String?
+}
