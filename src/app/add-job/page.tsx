@@ -6,11 +6,13 @@ import axios from "axios";
 
 export default function AddJob() {
   const router = useRouter();
+  // ⭐️ ACCESS THE URL SEARCH PARAMS
   const searchParams = useSearchParams();
-  const currentTerm = searchParams.get("term") || "";
+  const initialTerm = searchParams.get("term") || "";
+
 
   const [form, setForm] = useState({
-    term: currentTerm,
+    term: initialTerm,
     company: "",
     role: "",
     jobId: "",
@@ -25,7 +27,7 @@ export default function AddJob() {
     skills: "",
   });
 
-  const categories = ["Intern/Co-op", "Part Time", "Full Time", "Contract"];
+  const categories = ["Intern/Co-op", "Part Time", "Full Time", "Contact"];
   const flexOptions = ["On-site", "Hybrid", "Remote"];
   const statusOptions = [
     "Apply",
@@ -40,11 +42,7 @@ export default function AddJob() {
     "Cancel",
   ];
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
@@ -55,133 +53,81 @@ export default function AddJob() {
   };
 
   return (
-    <div className="p-8 max-w-2xl mx-auto">
-      <h1 className="text-3xl font-semibold mb-6 text-center">
-        Add New Job – {currentTerm}
-      </h1>
-
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-md rounded-lg p-6 space-y-4"
-      >
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <input
-            name="company"
-            placeholder="Company Name"
-            value={form.company}
-            onChange={handleChange}
-            required
-            className="border px-3 py-2 rounded-md w-full"
-          />
-          <input
-            name="role"
-            placeholder="Role / Position"
-            value={form.role}
-            onChange={handleChange}
-            required
-            className="border px-3 py-2 rounded-md w-full"
-          />
-          <input
-            name="location"
-            placeholder="Location"
-            value={form.location}
-            onChange={handleChange}
-            className="border px-3 py-2 rounded-md w-full"
-          />
-          <input
-            name="jobId"
-            placeholder="Job ID"
-            value={form.jobId}
-            onChange={handleChange}
-            className="border px-3 py-2 rounded-md w-full"
-          />
+    <div className="container">
+      <h1>Add a New Job</h1>
+      <form className="job-form" onSubmit={handleSubmit}>
+        <div className="form-row">
+          <label>Term</label>
+          <input name="term" value={form.term} onChange={handleChange} required />
+        </div>
+        <div className="form-row">
+          <label>Company</label>
+          <input name="company" value={form.company} onChange={handleChange} required />
+        </div>
+        <div className="form-row">
+          <label>Role</label>
+          <input name="role" value={form.role} onChange={handleChange} required />
+        </div>
+        <div className="form-row">
+          <label>Job ID</label>
+          <input name="jobId" value={form.jobId} onChange={handleChange} />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <select
-            name="category"
-            value={form.category}
-            onChange={handleChange}
-            className="border px-3 py-2 rounded-md"
-          >
-            {categories.map((c) => (
-              <option key={c}>{c}</option>
-            ))}
-          </select>
-
-          <select
-            name="status"
-            value={form.status}
-            onChange={handleChange}
-            className="border px-3 py-2 rounded-md"
-          >
-            {statusOptions.map((s) => (
-              <option key={s}>{s}</option>
-            ))}
-          </select>
-
-          <select
-            name="flexibility"
-            value={form.flexibility}
-            onChange={handleChange}
-            className="border px-3 py-2 rounded-md"
-          >
-            {flexOptions.map((f) => (
-              <option key={f}>{f}</option>
-            ))}
-          </select>
-
-          <input
-            type="date"
-            name="dateApply"
-            value={form.dateApply}
-            onChange={handleChange}
-            className="border px-3 py-2 rounded-md"
-          />
+        <div className="form-grid">
+          <div>
+            <label>Category</label>
+            <select name="category" value={form.category} onChange={handleChange}>
+              {categories.map((c) => (
+                <option key={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label>Opportunity</label>
+            <input name="opportunity" value={form.opportunity} onChange={handleChange} />
+          </div>
+          <div>
+            <label>Location</label>
+            <input name="location" value={form.location} onChange={handleChange} />
+          </div>
+          <div>
+            <label>Flexibility</label>
+            <select name="flexibility" value={form.flexibility} onChange={handleChange}>
+              {flexOptions.map((f) => (
+                <option key={f}>{f}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label>Status</label>
+            <select name="status" value={form.status} onChange={handleChange}>
+              {statusOptions.map((s) => (
+                <option key={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label>Date Applied</label>
+            <input type="date" name="dateApply" value={form.dateApply} onChange={handleChange} />
+          </div>
+          <div>
+            <label>In-touch Person</label>
+            <input name="contact" value={form.contact} onChange={handleChange} />
+          </div>
         </div>
 
-        <input
-          name="contact"
-          placeholder="In-touch Person"
-          value={form.contact}
-          onChange={handleChange}
-          className="border px-3 py-2 rounded-md w-full"
-        />
-
-        <textarea
-          name="jobDescription"
-          placeholder="Job Description"
-          rows={3}
-          value={form.jobDescription}
-          onChange={handleChange}
-          className="border px-3 py-2 rounded-md w-full"
-        />
-
-        <textarea
-          name="skills"
-          placeholder="Skills Sought"
-          rows={2}
-          value={form.skills}
-          onChange={handleChange}
-          className="border px-3 py-2 rounded-md w-full"
-        />
-
-        <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={() => router.push("/")}
-            className="border px-4 py-2 rounded-md hover:bg-gray-100"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-          >
-            Add Job
-          </button>
+        <div className="form-row">
+          <label>Job Description</label>
+          <textarea name="jobDescription" value={form.jobDescription} onChange={handleChange} rows={4} />
         </div>
+        <div className="form-row">
+          <label>Skills Sought</label>
+          <textarea name="skills" value={form.skills} onChange={handleChange} rows={3} />
+        </div>
+
+        <button type="submit" className="btn-primary">Add Job</button>
       </form>
     </div>
   );
 }
+

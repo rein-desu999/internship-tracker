@@ -3,6 +3,9 @@ import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import fs from "fs";
 import path from "path";
+import cron from "node-cron";
+import { scrapeInternships } from "./scraper/scraper.js";
+import { scrapeLinkedInInternships } from "./scraper/linkedinScraper.js";
 
 const app = express();
 const prisma = new PrismaClient();
@@ -23,9 +26,13 @@ if (!fs.existsSync(dbFile)) {
 app.get("/", (_, res) => res.send("✅ Job Tracker API running"));
 
 // ✅ Get all jobs
-app.get("/jobs", async (_, res) => {
+// ✅ Get all jobs (optionally filter by term)
+app.get("/jobs", async (req, res) => {
   try {
+    const { term } = req.query;
+    const where = term ? { term } : {};
     const jobs = await prisma.job.findMany({
+      where,
       orderBy: { dateApply: "desc" },
     });
     res.json(jobs);
@@ -34,6 +41,7 @@ app.get("/jobs", async (_, res) => {
     res.status(500).json({ error: "Failed to fetch jobs" });
   }
 });
+
 
 // ✅ Get job by ID
 app.get("/jobs/:id", async (req, res) => {
@@ -135,6 +143,18 @@ app.post("/terms", async (req, res) => {
   }
 });
 
+cron.schedule("0 */4 * * *", scrapeInternships);
+
+// ✅ Scraping jobs from LinkedIn
+app.get("/api/scrape/linkedin", async (req, res) => {
+  try {
+    const results = await scrapeLinkedInInternships();
+    res.json({ results });
+  } catch (err) {
+    console.error("Scraper failed:", err);
+    res.status(500).json({ error: "Scraper failed." });
+  }
+});
 
 const PORT = 4000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
